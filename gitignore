@@ -188,5 +188,6 @@ gradle-app.setting
 .프로젝트
 # JDT 전용(Eclipse Java 개발 도구)
 .classpath
+*.lock
 
 # https://www.toptal.com/developers/gitignore/api/gradle 끝

@@ -1,3 +1,7 @@
+import DTO.CharacterClass;
+import DTO.EnemyClass;
+import DTO.ItemClass;
+
 import java.sql.*;
 
 public class DBClass
@@ -45,7 +49,7 @@ public class DBClass
 
 
     // 데이터 넣기 메소드
-    public void insertItem(String name, String att, String dem, String hyo)
+    public void insertItem(ItemClass item)
     {
         //쿼리문 준비
         String sql = "INSERT INTO `item` (`name`, `att`, `dem`, `hyo`) VALUES (?, ?, ?, ?)";
@@ -57,10 +61,10 @@ public class DBClass
         try
         {
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, name);
-            pstmt.setString(2, att);
-            pstmt.setString(3, dem);
-            pstmt.setString(4, hyo);
+            pstmt.setString(1, item.getName());
+            pstmt.setString(2, item.getAtt());
+            pstmt.setInt(3, item.getDem());
+            pstmt.setString(4, item.getHyo());
 
             int result = pstmt.executeUpdate();
 
@@ -145,5 +149,272 @@ public class DBClass
             }
         }
 
+    }
+    public void insertCharacter(CharacterClass character)
+    {
+        //쿼리문 준비
+        String sql = "INSERT INTO `tb_character` (`c_name`, `c_hp`, `c_job`) VALUES (?, ?, ?)";
+
+        PreparedStatement pstmt = null;
+
+        Connection conn = dbConn(); // db연결 메소드
+
+        try
+        {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, character.getC_name());
+            pstmt.setInt(2, character.getC_hp());
+            pstmt.setString(3, character.getC_job());
+
+            int result = pstmt.executeUpdate();
+
+            if(result == 1)
+            {
+                System.out.println("데이터 삽입 성공!");
+
+            }
+
+        }
+        catch (Exception e)
+        {
+            System.out.println("데이터 삽입 실패!");
+        }
+        finally
+        {
+            try
+            {
+                if(pstmt != null && !pstmt.isClosed())
+                {
+                    pstmt.close();
+                }
+            }
+            catch (Exception e2)
+            {
+                e2.printStackTrace(); // 오류 출력 기능
+            }
+        }
+    }
+
+
+    // 데이터 보기 메소드
+    public void selectCharacter()
+    {
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Connection conn = dbConn(); // db연결 메소드
+
+        try
+        {
+            String sql = "select * from tb_character";
+
+            pstmt = conn.prepareStatement(sql);
+
+            rs = pstmt.executeQuery();
+
+            while (rs.next())
+            {
+                String name = rs.getString("c_name");
+                String hp = rs.getString("c_hp");
+                String jop = rs.getString("c_job");
+                System.out.println("이름 : " + name + " / 체력 : " + hp + " / 직업 : " + jop);
+            }
+
+        }
+        catch (SQLException e)
+        {
+            System.out.println("error: " + e);
+        }
+        finally
+        {
+            try
+            {
+                if (rs != null)
+                {
+                    rs.close();
+                }
+                if (pstmt != null)
+                {
+                    pstmt.close();
+                }
+
+                if (conn != null && !conn.isClosed())
+                {
+                    conn.close();
+                }
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+    }
+    public void insertEnemy(EnemyClass enemy)
+    {
+        //쿼리문 준비
+        String sql = "INSERT INTO `enemy` (`e_name`, `e_hp`) VALUES (?, ?)";
+
+        PreparedStatement pstmt = null;
+
+        Connection conn = dbConn(); // db연결 메소드
+
+        try
+        {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, enemy.getE_name());
+            pstmt.setInt(2, enemy.getE_hp());
+
+            int result = pstmt.executeUpdate();
+
+            if(result == 1)
+            {
+                System.out.println("데이터 삽입 성공!");
+
+            }
+
+        }
+        catch (Exception e)
+        {
+            System.out.println("데이터 삽입 실패!");
+        }
+        finally
+        {
+            try
+            {
+                if(pstmt != null && !pstmt.isClosed())
+                {
+                    pstmt.close();
+                }
+            }
+            catch (Exception e2)
+            {
+                e2.printStackTrace(); // 오류 출력 기능
+            }
+        }
+    }
+
+
+    // 데이터 보기 메소드
+    public void selectEnemy()
+    {
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Connection conn = dbConn(); // db연결 메소드
+
+        try
+        {
+            String sql = "select * from enemy";
+
+            pstmt = conn.prepareStatement(sql);
+
+            rs = pstmt.executeQuery();
+
+            while (rs.next())
+            {
+                String name = rs.getString("e_name");
+                String hp = rs.getString("e_hp");
+                System.out.println("이름 : " + name + " / 체력 : " + hp);
+            }
+
+        }
+        catch (SQLException e)
+        {
+            System.out.println("error: " + e);
+        }
+        finally
+        {
+            try
+            {
+                if (rs != null)
+                {
+                    rs.close();
+                }
+                if (pstmt != null)
+                {
+                    pstmt.close();
+                }
+
+                if (conn != null && !conn.isClosed())
+                {
+                    conn.close();
+                }
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+    }
+    public boolean checkDB() {
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Connection conn = dbConn();   // db 연결 메소드
+        String playerCheck = "select id from tb_character;";
+        String monsterCheck = "select id from enemy;";
+        String itemCheck = "select id from item;";
+        boolean cc = false;
+        boolean ic= false;
+        boolean mc = false;
+        boolean result;
+        try
+        {
+            pstmt = conn.prepareStatement(playerCheck);
+
+            rs = pstmt.executeQuery();
+            if (rs.next())
+            {
+                int index = rs.getInt("id");
+                System.out.println(index);
+                cc = true;      //해당 테이블에 데이터가 있으면 true
+            }
+        }
+        catch (SQLException e)
+        {
+            System.out.println("error: " + e);
+        }
+        try
+        {
+            pstmt = conn.prepareStatement(monsterCheck);
+
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+            {
+                int index = rs.getInt("id");
+                System.out.println(index);
+                ic = true;      //해당 테이블에 데이터가 있으면 true
+            }
+        }
+        catch (SQLException e)
+        {
+            System.out.println("error: " + e);
+        }
+        try
+        {
+            pstmt = conn.prepareStatement(itemCheck);
+
+            rs = pstmt.executeQuery();
+            if (rs.next())
+            {
+                int index = rs.getInt("id");
+                System.out.println(index);
+                mc = true;      //해당 테이블에 데이터가 있으면 true
+            }
+        }
+        catch (SQLException e)
+        {
+            System.out.println("error: " + e);
+        }
+
+        if (cc && ic && mc)
+        {   //3개의 테이블에 데이터가 모두 있으면 true / 없으면 false
+            result = true;
+        }
+        else
+        {
+            result = false;
+        }
+        return result;
     }
 }
