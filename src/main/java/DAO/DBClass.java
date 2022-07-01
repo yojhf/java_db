@@ -1,3 +1,5 @@
+package DAO;
+
 import DTO.CharacterClass;
 import DTO.EnemyClass;
 import DTO.ItemClass;
@@ -215,8 +217,8 @@ public class DBClass
             {
                 String name = rs.getString("c_name");
                 String hp = rs.getString("c_hp");
-                String jop = rs.getString("c_job");
-                System.out.println("이름 : " + name + " / 체력 : " + hp + " / 직업 : " + jop);
+                String job = rs.getString("c_job");
+                System.out.println("이름 : " + name + " / 체력 : " + hp + " / 직업 : " + job);
             }
 
         }
@@ -303,7 +305,8 @@ public class DBClass
 
         try
         {
-            String sql = "select * from enemy";
+            String sql = "select * from enemy ";
+            //String sql1 = "select * from enemy order by rand() LIMIT 1";
 
             pstmt = conn.prepareStatement(sql);
 
@@ -416,5 +419,59 @@ public class DBClass
             result = false;
         }
         return result;
+    }
+    public String callEnemy()
+    {
+        String cn = "";
+
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Connection conn = dbConn(); // db연결 메소드
+
+        try
+        {
+            String sql = "select * from enemy order by rand() LIMIT 1 ";
+            //String sql1 = "select * from enemy order by rand() LIMIT 1";
+
+            pstmt = conn.prepareStatement(sql);
+
+            rs = pstmt.executeQuery();
+
+            while (rs.next())
+           {
+                cn = rs.getString("e_name");
+                String hp = rs.getString("e_hp");
+                //System.out.println("이름 : " + cn + " / 체력 : " + hp);
+           }
+
+        }
+        catch (SQLException e)
+        {
+            System.out.println("error : " + e);
+        }
+        finally
+        {
+            try
+            {
+                if (rs != null)
+                {
+                    rs.close();
+                }
+                if (pstmt != null)
+                {
+                    pstmt.close();
+                }
+
+                if (conn != null && !conn.isClosed())
+                {
+                    conn.close();
+                }
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return cn;
     }
 }

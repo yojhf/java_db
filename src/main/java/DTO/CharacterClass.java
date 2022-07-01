@@ -37,7 +37,8 @@ public class CharacterClass
         this.c_hp = c_hp;
     }
 
-    public String getC_job() {
+    public String getC_job()
+    {
         return c_job;
     }
 
